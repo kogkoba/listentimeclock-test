@@ -632,67 +632,32 @@
       }
     }
 
-    async function loadDailyStatus() {
-      try {
-        statusMessage.textContent = "一覧を読み込み中...";
-        const dateValue = statusDate.value;
-        const apiDate = formatDateForApi(dateValue);
-
-        const response = await fetch(`${CONFIG.GAS_URL}?action=getDailyStatus&date=${encodeURIComponent(apiDate)}`);
-        const data = await response.json();
-
-        if (!data.success) {
-          throw new Error(data.message || "一覧の取得に失敗しました");
-        }
-
-        currentStatuses = data.statuses || [];
-        editingName = "";
-        renderStatusTable(currentStatuses);
-        statusMessage.textContent = "";
-      } catch (error) {
-        console.error(error);
-        statusMessage.textContent = "一覧の取得に失敗しました";
-      }
-    }
-async function saveEdit() {
-  const editClockIn = document.getElementById("editClockIn");
-  const editClockOut = document.getElementById("editClockOut");
-
-  if (!editingName) {
-    statusMessage.textContent = "編集対象がありません";
-    return;
-  }
-
+async function loadDailyStatus() {
   try {
-    statusMessage.textContent = "修正を保存中...";
-    const response = await fetch(CONFIG.GAS_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "text/plain;charset=utf-8"
-      },
-      body: JSON.stringify({
-        action: "saveEdit",
-        date: formatDateForApi(statusDate.value),
-        name: editingName,
-        clockIn: editClockIn ? editClockIn.value : "",
-        clockOut: editClockOut ? editClockOut.value : "",
-        editedBy: "代表"
-      })
-    });
+    statusMessage.textContent = "一覧を読み込み中...";
+    const dateValue = statusDate.value;
+    const apiDate = formatDateForApi(dateValue);
+    const url = `${CONFIG.GAS_URL}?action=getDailyStatus&date=${encodeURIComponent(apiDate)}&_ts=${Date.now()}`;
 
+    const response = await fetch(url, {
+      method: "GET",
+      cache: "no-store"
+    });
     const data = await response.json();
-    console.log("saveEdit response:", data);
+
+    console.log("loadDailyStatus response:", data);
 
     if (!data.success) {
-      throw new Error(data.message || "修正保存に失敗しました");
+      throw new Error(data.message || "一覧の取得に失敗しました");
     }
 
-    statusMessage.textContent = data.message;
+    currentStatuses = data.statuses || [];
     editingName = "";
-    await loadDailyStatus();
+    renderStatusTable(currentStatuses);
+    statusMessage.textContent = "";
   } catch (error) {
     console.error(error);
-    statusMessage.textContent = `修正保存に失敗しました: ${error.message}`;
+    statusMessage.textContent = `一覧の取得に失敗しました: ${error.message}`;
   }
 }
     function exportStatusCsv() {
