@@ -795,6 +795,7 @@ async function saveClock(actionType) {
     selectedName.textContent = "未選択";
     renderEmployees();
 
+    await new Promise(resolve => setTimeout(resolve, 500));
     await loadDailyStatus();
 
     setTimeout(() => {
