@@ -797,7 +797,7 @@ async function saveClock(actionType) {
 
     await new Promise(resolve => setTimeout(resolve, 500));
     await loadDailyStatus();
-
+    
     setTimeout(() => {
       message.textContent = "";
     }, 3000);
