@@ -835,7 +835,7 @@ async function saveEdit() {
 
       } catch (error) {
         console.error(error);
-        message.textContent = "保存に失敗しました";
+        message.textContent = `保存に失敗しました: ${error.message}`;
       }
     }
 
